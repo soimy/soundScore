@@ -1,0 +1,206 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ARRAY_LEN	sample/common.h	/^#define ARRAY_LEN(/;"	d
+ARRAY_LEN	sample/window.c	/^#define ARRAY_LEN(/;"	d	file:
+ARRAY_LEN	soundView.cpp	/^#define ARRAY_LEN(/;"	d	file:
+BORDER_LINE_WIDTH	sample/sndfile-spectrogram.c	/^#define	BORDER_LINE_WIDTH	/;"	d	file:
+BOTTOM_BORDER	sample/sndfile-spectrogram.c	/^#define	BOTTOM_BORDER	/;"	d	file:
+BUFFER_LEN	soundView.cpp	/^#define BUFFER_LEN /;"	d	file:
+CHECK_OVERFLOW_OP	_kiss_fft_guts.h	/^#  define CHECK_OVERFLOW_OP(/;"	d
+C_ADD	_kiss_fft_guts.h	/^#define  C_ADD(/;"	d
+C_ADD	kissfft.hh	/^        void C_ADD( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a+b;}$/;"	f	class:kissfft
+C_ADDTO	_kiss_fft_guts.h	/^#define C_ADDTO(/;"	d
+C_ADDTO	kissfft.hh	/^        void C_ADDTO( cpx_type & c,const cpx_type & a) { c+=a;}$/;"	f	class:kissfft
+C_FIXDIV	_kiss_fft_guts.h	/^#   define C_FIXDIV(/;"	d
+C_FIXDIV	kissfft.hh	/^        void C_FIXDIV( cpx_type & ,int ) {} \/\/ NO-OP for float types$/;"	f	class:kissfft
+C_MUL	_kiss_fft_guts.h	/^#   define C_MUL(/;"	d
+C_MUL	_kiss_fft_guts.h	/^#define C_MUL(/;"	d
+C_MUL	kissfft.hh	/^        void C_MUL( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a*b;}$/;"	f	class:kissfft
+C_MULBYSCALAR	_kiss_fft_guts.h	/^#   define C_MULBYSCALAR(/;"	d
+C_MULBYSCALAR	kissfft.hh	/^        void C_MULBYSCALAR(cpx_type & c,const scalar_type & a) {c*=a;}$/;"	f	class:kissfft
+C_SUB	_kiss_fft_guts.h	/^#define  C_SUB(/;"	d
+C_SUB	kissfft.hh	/^        void C_SUB( cpx_type & c,const cpx_type & a,const cpx_type & b) { c=a-b;}$/;"	f	class:kissfft
+C_SUBFROM	_kiss_fft_guts.h	/^#define C_SUBFROM(/;"	d
+DIVSCALAR	_kiss_fft_guts.h	/^#   define DIVSCALAR(/;"	d
+DirectoryOfThisScript	.ycm_extra_conf.py	/^def DirectoryOfThisScript():$/;"	f
+FRACBITS	_kiss_fft_guts.h	/^# define FRACBITS /;"	d
+FlagsForFile	.ycm_extra_conf.py	/^def FlagsForFile( filename, **kwargs ):$/;"	f
+GetCompilationInfoForFile	.ycm_extra_conf.py	/^def GetCompilationInfoForFile( filename ):$/;"	f
+HALF_OF	_kiss_fft_guts.h	/^#  define HALF_OF(/;"	d
+HALF_OF	kissfft.hh	/^        scalar_type HALF_OF( const scalar_type & a) { return a*.5;}$/;"	f	class:kissfft
+HEIGHT	soundView.cpp	/^#define HEIGHT /;"	d	file:
+IsHeaderFile	.ycm_extra_conf.py	/^def IsHeaderFile( filename ):$/;"	f
+KISS_FFT_COS	_kiss_fft_guts.h	/^#  define KISS_FFT_COS(/;"	d
+KISS_FFT_FREE	kiss_fft.h	/^#define KISS_FFT_FREE /;"	d
+KISS_FFT_H	kiss_fft.h	/^#define KISS_FFT_H$/;"	d
+KISS_FFT_MALLOC	kiss_fft.h	/^#define KISS_FFT_MALLOC /;"	d
+KISS_FFT_MALLOC	kiss_fft.h	/^#define KISS_FFT_MALLOC(/;"	d
+KISS_FFT_SIN	_kiss_fft_guts.h	/^#  define KISS_FFT_SIN(/;"	d
+KISS_FFT_TMP_ALLOC	_kiss_fft_guts.h	/^#define  KISS_FFT_TMP_ALLOC(/;"	d
+KISS_FFT_TMP_FREE	_kiss_fft_guts.h	/^#define  KISS_FFT_TMP_FREE(/;"	d
+KISS_FTR_H	kiss_fftr.h	/^#define KISS_FTR_H$/;"	d
+LEFT_BORDER	sample/sndfile-spectrogram.c	/^#define	LEFT_BORDER	/;"	d	file:
+MAX	sample/common.h	/^#define MAX(/;"	d
+MAXFACTORS	_kiss_fft_guts.h	/^#define MAXFACTORS /;"	d
+MAX_CHANNELS	soundView.cpp	/^#define MAX_CHANNELS /;"	d	file:
+MAX_HEIGHT	sample/sndfile-spectrogram.c	/^#define	MAX_HEIGHT	/;"	d	file:
+MAX_WIDTH	sample/sndfile-spectrogram.c	/^#define	MAX_WIDTH	/;"	d	file:
+MIN	sample/common.h	/^#define MIN(/;"	d
+MIN_HEIGHT	sample/sndfile-spectrogram.c	/^#define	MIN_HEIGHT	/;"	d	file:
+MIN_WIDTH	sample/sndfile-spectrogram.c	/^#define	MIN_WIDTH	/;"	d	file:
+MakeRelativePathsInFlagsAbsolute	.ycm_extra_conf.py	/^def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):$/;"	f
+NORMAL_FONT_SIZE	sample/sndfile-spectrogram.c	/^#define	NORMAL_FONT_SIZE	/;"	d	file:
+RECT	sample/sndfile-spectrogram.c	/^} RECT ;$/;"	t	typeref:struct:__anon3	file:
+RENDER	sample/sndfile-spectrogram.c	/^} RENDER ;$/;"	t	typeref:struct:__anon2	file:
+RIGHT_BORDER	sample/sndfile-spectrogram.c	/^#define	RIGHT_BORDER	/;"	d	file:
+SAMPPROD	_kiss_fft_guts.h	/^# define SAMPPROD /;"	d
+SAMP_MAX	_kiss_fft_guts.h	/^#define SAMP_MAX /;"	d
+SAMP_MIN	_kiss_fft_guts.h	/^#define SAMP_MIN /;"	d
+SOURCE_EXTENSIONS	.ycm_extra_conf.py	/^SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]$/;"	v
+SPEC_FLOOR_DB	sample/sndfile-spectrogram.c	/^#define	SPEC_FLOOR_DB	/;"	d	file:
+S_MUL	_kiss_fft_guts.h	/^#   define S_MUL(/;"	d
+S_MUL	kissfft.hh	/^        scalar_type S_MUL( const scalar_type & a,const scalar_type & b) { return a*b;}$/;"	f	class:kissfft
+TICKS	sample/sndfile-spectrogram.c	/^} TICKS ;$/;"	t	typeref:struct:__anon4	file:
+TICK_LEN	sample/sndfile-spectrogram.c	/^#define TICK_LEN	/;"	d	file:
+TITLE_FONT_SIZE	sample/sndfile-spectrogram.c	/^#define	TITLE_FONT_SIZE	/;"	d	file:
+TOP_BORDER	sample/sndfile-spectrogram.c	/^#define	TOP_BORDER	/;"	d	file:
+USE_VISUAL	soundView.cpp	/^#define USE_VISUAL /;"	d	file:
+VIS_TOPFREQ	soundView.cpp	/^#define VIS_TOPFREQ /;"	d	file:
+WIDTH	soundView.cpp	/^#define WIDTH /;"	d	file:
+_inverse	kissfft.hh	/^        bool _inverse;$/;"	m	class:kissfft
+_nfft	kissfft.hh	/^        int _nfft;$/;"	m	class:kissfft
+_stageRadix	kissfft.hh	/^        std::vector<int> _stageRadix;$/;"	m	class:kissfft
+_stageRemainder	kissfft.hh	/^        std::vector<int> _stageRemainder;$/;"	m	class:kissfft
+_traits	kissfft.hh	/^        traits_type _traits;$/;"	m	class:kissfft
+_twiddles	kissfft.hh	/^        std::vector<cpx_type> _twiddles;$/;"	m	class:kissfft
+_twiddles	kissfft.hh	/^    std::vector<cpx_type> _twiddles;$/;"	m	struct:kissfft_utils::traits
+apply_window	sample/sndfile-spectrogram.c	/^apply_window (double * data, int datalen)$/;"	f	file:
+apply_window	soundView.cpp	/^apply_window (float * out, const float * data, int datalen)$/;"	f	file:
+besseli0	sample/window.c	/^besseli0 (double x)$/;"	f	file:
+besseli0	soundView.cpp	/^besseli0 (float x)$/;"	f	file:
+border	sample/sndfile-spectrogram.c	/^	bool border, log_freq ;$/;"	m	struct:__anon2	file:
+calc_kaiser_window	sample/window.c	/^calc_kaiser_window (double * data, int datalen, double beta)$/;"	f
+calc_kaiser_window	soundView.cpp	/^calc_kaiser_window (float* data, int datalen, float beta)$/;"	f
+calc_magnitude	sample/sndfile-spectrogram.c	/^calc_magnitude (const double * freq, int freqlen, double * magnitude)$/;"	f	file:
+calc_nuttall_window	sample/window.c	/^calc_nuttall_window (double * data, int datalen)$/;"	f
+calculate_ticks	sample/sndfile-spectrogram.c	/^calculate_ticks (double max, double distance, TICKS * ticks)$/;"	f	file:
+check_int_range	sample/sndfile-spectrogram.c	/^check_int_range (const char * name, int value, int lower, int upper)$/;"	f	file:
+col	soundView.cpp	/^	int col;$/;"	m	struct:__anon5	file:
+compilation_database_folder	.ycm_extra_conf.py	/^compilation_database_folder = ''$/;"	v
+cpx_type	kissfft.hh	/^        typedef typename traits_type::cpx_type cpx_type;$/;"	t	class:kissfft
+cpx_type	kissfft.hh	/^    typedef std::complex<scalar_type> cpx_type;$/;"	t	struct:kissfft_utils::traits
+data	soundView.cpp	/^	float data[BUFFER_LEN];$/;"	m	struct:__anon5	file:
+database	.ycm_extra_conf.py	/^  database = None$/;"	v
+database	.ycm_extra_conf.py	/^  database = ycm_core.CompilationDatabase( compilation_database_folder )$/;"	v
+distance	sample/sndfile-spectrogram.c	/^	double distance [15] ;$/;"	m	struct:__anon4	file:
+factorial	sample/window.c	/^factorial (int val)$/;"	f	file:
+factorial	soundView.cpp	/^factorial (int val)$/;"	f	file:
+factors	_kiss_fft_guts.h	/^    int factors[2*MAXFACTORS];$/;"	m	struct:kiss_fft_state
+fftcfg	soundView.cpp	/^	kiss_fftr_cfg fftcfg;$/;"	m	struct:__anon5	file:
+filename	sample/sndfile-spectrogram.c	/^{	const char *sndfilepath, *pngfilepath, *filename ;$/;"	m	struct:__anon2	file:
+fill_twiddles	kissfft.hh	/^    void fill_twiddles( std::complex<T_scalar> * dst ,int nfft,bool inverse)$/;"	f	struct:kissfft_utils::traits
+flags	.ycm_extra_conf.py	/^flags = [$/;"	v
+font_family	sample/sndfile-spectrogram.c	/^static const char font_family [] = "Monaco" ;$/;"	v	file:
+get_colour_map_value	sample/sndfile-spectrogram.c	/^get_colour_map_value (float value, double spec_floor_db, unsigned char colour [3])$/;"	f	file:
+height	sample/sndfile-spectrogram.c	/^	int width, height ;$/;"	m	struct:__anon2	file:
+height	sample/sndfile-spectrogram.c	/^{	int left, top, width, height ;$/;"	m	struct:__anon3	file:
+help	soundView.cpp	/^help(){$/;"	f
+i	kiss_fft.h	/^    kiss_fft_scalar i;$/;"	m	struct:__anon1
+in	soundView.cpp	/^	kiss_fft_scalar in[BUFFER_LEN * 2];$/;"	m	struct:__anon5	file:
+init_test	sample/window.c	/^init_test (void)$/;"	f	file:
+interp_spec	sample/sndfile-spectrogram.c	/^interp_spec (float * mag, int maglen, const double *spec, int speclen)$/;"	f	file:
+interp_spec	soundView.cpp	/^interp_spec (float* mag, int maglen, const float* spec, int speclen)$/;"	f	file:
+inverse	_kiss_fft_guts.h	/^    int inverse;$/;"	m	struct:kiss_fft_state
+kf_bfly2	kiss_fft.c	/^static void kf_bfly2($/;"	f	file:
+kf_bfly2	kissfft.hh	/^        void kf_bfly2( cpx_type * Fout, const size_t fstride, int m)$/;"	f	class:kissfft
+kf_bfly3	kiss_fft.c	/^static void kf_bfly3($/;"	f	file:
+kf_bfly3	kissfft.hh	/^        void kf_bfly3( cpx_type * Fout, const size_t fstride, const size_t m)$/;"	f	class:kissfft
+kf_bfly4	kiss_fft.c	/^static void kf_bfly4($/;"	f	file:
+kf_bfly4	kissfft.hh	/^        void kf_bfly4( cpx_type * Fout, const size_t fstride, const size_t m)$/;"	f	class:kissfft
+kf_bfly5	kiss_fft.c	/^static void kf_bfly5($/;"	f	file:
+kf_bfly5	kissfft.hh	/^        void kf_bfly5( cpx_type * Fout, const size_t fstride, const size_t m)$/;"	f	class:kissfft
+kf_bfly_generic	kiss_fft.c	/^static void kf_bfly_generic($/;"	f	file:
+kf_bfly_generic	kissfft.hh	/^        void kf_bfly_generic($/;"	f	class:kissfft
+kf_cexp	_kiss_fft_guts.h	/^#define  kf_cexp(/;"	d
+kf_factor	kiss_fft.c	/^void kf_factor(int n,int * facbuf)$/;"	f	file:
+kf_work	kiss_fft.c	/^void kf_work($/;"	f	file:
+kf_work	kissfft.hh	/^        void kf_work( int stage,cpx_type * Fout, const cpx_type * f, size_t fstride,size_t in_stride)$/;"	f	class:kissfft
+kiss_fft	kiss_fft.c	/^void kiss_fft(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout)$/;"	f
+kiss_fft_alloc	kiss_fft.c	/^kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem )$/;"	f
+kiss_fft_cfg	kiss_fft.h	/^typedef struct kiss_fft_state* kiss_fft_cfg;$/;"	t	typeref:struct:kiss_fft_state
+kiss_fft_cleanup	kiss_fft.c	/^void kiss_fft_cleanup(void)$/;"	f
+kiss_fft_cpx	kiss_fft.h	/^}kiss_fft_cpx;$/;"	t	typeref:struct:__anon1
+kiss_fft_free	kiss_fft.h	/^#define kiss_fft_free /;"	d
+kiss_fft_next_fast_size	kiss_fft.c	/^int kiss_fft_next_fast_size(int n)$/;"	f
+kiss_fft_scalar	kiss_fft.h	/^#   define kiss_fft_scalar /;"	d
+kiss_fft_scalar	kiss_fft.h	/^#  define kiss_fft_scalar /;"	d
+kiss_fft_scalar	kiss_fft.h	/^# define kiss_fft_scalar /;"	d
+kiss_fft_state	_kiss_fft_guts.h	/^struct kiss_fft_state{$/;"	s
+kiss_fft_stride	kiss_fft.c	/^void kiss_fft_stride(kiss_fft_cfg st,const kiss_fft_cpx *fin,kiss_fft_cpx *fout,int in_stride)$/;"	f
+kiss_fftr	kiss_fftr.c	/^void kiss_fftr(kiss_fftr_cfg st,const kiss_fft_scalar *timedata,kiss_fft_cpx *freqdata)$/;"	f
+kiss_fftr_alloc	kiss_fftr.c	/^kiss_fftr_cfg kiss_fftr_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem)$/;"	f
+kiss_fftr_cfg	kiss_fftr.h	/^typedef struct kiss_fftr_state *kiss_fftr_cfg;$/;"	t	typeref:struct:kiss_fftr_state
+kiss_fftr_free	kiss_fftr.h	/^#define kiss_fftr_free /;"	d
+kiss_fftr_next_fast_size_real	kiss_fft.h	/^#define kiss_fftr_next_fast_size_real(/;"	d
+kiss_fftr_state	kiss_fftr.c	/^struct kiss_fftr_state{$/;"	s	file:
+kiss_fftri	kiss_fftr.c	/^void kiss_fftri(kiss_fftr_cfg st,const kiss_fft_cpx *freqdata,kiss_fft_scalar *timedata)$/;"	f
+kissfft	kissfft.hh	/^        kissfft(int nfft,bool inverse,const traits_type & traits=traits_type() ) $/;"	f	class:kissfft
+kissfft	kissfft.hh	/^class kissfft$/;"	c
+kissfft_utils	kissfft.hh	/^namespace kissfft_utils {$/;"	n
+left	sample/sndfile-spectrogram.c	/^{	int left, top, width, height ;$/;"	m	struct:__anon3	file:
+log_freq	sample/sndfile-spectrogram.c	/^	bool border, log_freq ;$/;"	m	struct:__anon2	file:
+main	sample/sndfile-spectrogram.c	/^main (int argc, char * argv [])$/;"	f
+main	soundView.cpp	/^main (int argc, char* argv[])$/;"	f
+max_mag	soundView.cpp	/^	float max_mag;$/;"	m	struct:__anon5	file:
+nfft	_kiss_fft_guts.h	/^    int nfft;$/;"	m	struct:kiss_fft_state
+os	.ycm_extra_conf.py	/^import os$/;"	i
+out	soundView.cpp	/^	kiss_fft_cpx out[BUFFER_LEN * 2];$/;"	m	struct:__anon5	file:
+paCallback	soundView.cpp	/^static int paCallback(	const void *input,$/;"	f	file:
+paExitWithError	soundView.cpp	/^paExitWithError(PaError err)$/;"	f	file:
+pad	kiss_fftr.c	/^    void * pad;$/;"	m	struct:kiss_fftr_state	file:
+pcpx	_kiss_fft_guts.h	/^#define pcpx(/;"	d
+pngfilepath	sample/sndfile-spectrogram.c	/^{	const char *sndfilepath, *pngfilepath, *filename ;$/;"	m	struct:__anon2	file:
+prepare	kissfft.hh	/^    void prepare($/;"	f	struct:kissfft_utils::traits
+r	kiss_fft.h	/^    kiss_fft_scalar r;$/;"	m	struct:__anon1
+read_mono_audio	sample/sndfile-spectrogram.c	/^read_mono_audio (SNDFILE * file, sf_count_t filelen, double * data, int datalen, int indx, int total)$/;"	f	file:
+render_cairo_surface	sample/sndfile-spectrogram.c	/^render_cairo_surface (const RENDER * render, SNDFILE *infile, int samplerate, sf_count_t filelen)$/;"	f	file:
+render_heat_border	sample/sndfile-spectrogram.c	/^render_heat_border (cairo_surface_t * surface, double magfloor, const RECT *r)$/;"	f	file:
+render_heat_map	sample/sndfile-spectrogram.c	/^render_heat_map (cairo_surface_t * surface, double magfloor, const RECT *r)$/;"	f	file:
+render_sndfile	sample/sndfile-spectrogram.c	/^render_sndfile (const RENDER * render)$/;"	f	file:
+render_spect_border	sample/sndfile-spectrogram.c	/^render_spect_border (cairo_surface_t * surface, const char * filename, double left, double width, double seconds, double top, double height, double max_freq)$/;"	f	file:
+render_spectrogram	sample/sndfile-spectrogram.c	/^render_spectrogram (cairo_surface_t * surface, double spec_floor_db, float mag2d [MAX_WIDTH][MAX_HEIGHT], double maxval, double left, double top, double width, double height)$/;"	f	file:
+render_to_surface	sample/sndfile-spectrogram.c	/^render_to_surface (const RENDER * render, SNDFILE *infile, int samplerate, sf_count_t filelen, cairo_surface_t * surface)$/;"	f	file:
+scalar_type	kissfft.hh	/^        typedef typename traits_type::scalar_type scalar_type;$/;"	t	class:kissfft
+scalar_type	kissfft.hh	/^    typedef T_scalar scalar_type;$/;"	t	struct:kissfft_utils::traits
+sfinfo	soundView.cpp	/^	SF_INFO sfinfo;$/;"	m	struct:__anon5	file:
+sfx_mix_mono_read_double	sample/common.c	/^sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen)$/;"	f
+smul	_kiss_fft_guts.h	/^#   define smul(/;"	d
+sndData	soundView.cpp	/^} sndData;$/;"	t	typeref:struct:__anon5	file:
+sndfile	soundView.cpp	/^	SNDFILE* sndfile;$/;"	m	struct:__anon5	file:
+sndfilepath	sample/sndfile-spectrogram.c	/^{	const char *sndfilepath, *pngfilepath, *filename ;$/;"	m	struct:__anon2	file:
+specMat	soundView.cpp	/^	cv::Mat specMat;$/;"	m	struct:__anon5	file:
+spec_floor_db	sample/sndfile-spectrogram.c	/^	double spec_floor_db ;$/;"	m	struct:__anon2	file:
+sround	_kiss_fft_guts.h	/^#   define sround(/;"	d
+str_print_value	sample/sndfile-spectrogram.c	/^str_print_value (char * text, int text_len, double value)$/;"	f	file:
+substate	kiss_fftr.c	/^    kiss_fft_cfg substate;$/;"	m	struct:kiss_fftr_state	file:
+super_twiddles	kiss_fftr.c	/^    kiss_fft_cpx * super_twiddles;$/;"	m	struct:kiss_fftr_state	file:
+tmpbuf	kiss_fftr.c	/^    kiss_fft_cpx * tmpbuf;$/;"	m	struct:kiss_fftr_state	file:
+top	sample/sndfile-spectrogram.c	/^{	int left, top, width, height ;$/;"	m	struct:__anon3	file:
+traits	kissfft.hh	/^struct traits$/;"	s	namespace:kissfft_utils
+traits_type	kissfft.hh	/^        typedef T_traits traits_type;$/;"	t	class:kissfft
+transform	kissfft.hh	/^        void transform(const cpx_type * src , cpx_type * dst)$/;"	f	class:kissfft
+twiddle	kissfft.hh	/^    const cpx_type twiddle(int i) { return _twiddles[i]; }$/;"	f	struct:kissfft_utils::traits
+twiddles	_kiss_fft_guts.h	/^    kiss_fft_cpx twiddles[1];$/;"	m	struct:kiss_fft_state
+usage_exit	sample/sndfile-spectrogram.c	/^usage_exit (const char * argv0, int error)$/;"	f	file:
+value	sample/sndfile-spectrogram.c	/^{	double value [15] ;$/;"	m	struct:__anon4	file:
+volume	soundView.cpp	/^	float volume;$/;"	m	struct:__anon5	file:
+width	sample/sndfile-spectrogram.c	/^	int width, height ;$/;"	m	struct:__anon2	file:
+width	sample/sndfile-spectrogram.c	/^{	int left, top, width, height ;$/;"	m	struct:__anon3	file:
+winName	soundView.cpp	/^	string winName;$/;"	m	struct:__anon5	file:
+x_line	sample/sndfile-spectrogram.c	/^x_line (cairo_t * cr, double x, double y, double len)$/;"	f	file:
+y_line	sample/sndfile-spectrogram.c	/^y_line (cairo_t * cr, double x, double y, double len)$/;"	f	file:
+ycm_core	.ycm_extra_conf.py	/^import ycm_core$/;"	i

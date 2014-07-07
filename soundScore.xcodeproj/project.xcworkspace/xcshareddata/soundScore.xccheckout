@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>FF3E3131-962D-4336-B166-681974287058</string>
+	<key>IDESourceControlProjectName</key>
+	<string>soundScore</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>38F0818D-453D-4436-8BCD-D80C9D2DA5C0</key>
+		<string>https://github.com/soimy/soundScore.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>soundScore/soundScore.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>38F0818D-453D-4436-8BCD-D80C9D2DA5C0</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/soimy/soundScore.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>38F0818D-453D-4436-8BCD-D80C9D2DA5C0</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>38F0818D-453D-4436-8BCD-D80C9D2DA5C0</string>
+			<key>IDESourceControlWCCName</key>
+			<string>soundScore</string>
+		</dict>
+	</array>
+</dict>
+</plist>
