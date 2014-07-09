@@ -21,7 +21,9 @@
  sound input/output using portaudio.
  sound file readin/out using libsndfile.
  */
+
 #include <portaudio.h>
+#include <sndfile.hh>
 
 enum SNDIO_PARAM{
 	USE_MIC = 0,
@@ -58,11 +60,13 @@ class soundio
 				PaStreamCallbackFlags statusFlags);
 
 		bool recordMic();
+		bool stopMic();
 		bool recordFile();
 
 		float* sndCache;
 		Params params;
 		float max_db;
 		long currentIndex;
+		SndfileHandle sndfile;
 };
 

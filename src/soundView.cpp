@@ -18,7 +18,7 @@
  */
 
 // libsndfile can handle more than 6 channels but we'll restrict it to 6. */
-#define MAX_CHANNELS 1
+#define MAX_CHANNELS 2
 // Mat height & width
 #define WIDTH 512
 #define HEIGHT 200
@@ -54,6 +54,136 @@
 #include "soundView.h"
 
 using namespace std;
+
+void
+paExitWithError(PaError err)
+{
+	Pa_Terminate();
+	cerr << "An error occured while using the portaudio stream" << endl ;
+	cerr << "Error number	: " << err << endl;
+	cerr << "Error message	: " << Pa_GetErrorText( err ) << endl;
+	exit(err);
+}; /* paExitWithError */
+
+soundView::Params::Params()
+{
+    inputDevice = USE_MIC;
+    outputDevice = paNoDevice;
+    inputFilename = nullptr;
+}; /* soundView::Params::Params() */
+
+soundView::soundView(const soundView::Params &parameters) :
+    stream(0), volume(1), floor_db(0), max_db(200), params(parameters),
+    spectogram(cv::Size(WIDTH, HEIGHT),CV_8UC3)
+{
+	
+	//
+	// Initialization of FFT
+	//
+	fftcfg = kiss_fftr_alloc( 2 * BUFFER_LEN, 0, NULL, NULL);
+	if(fftcfg == NULL){
+		cerr << "Fatal: Not enough memory!" << endl;
+		exit(-1) ;
+	}
+    
+    // memory allocation of sound data
+    inputData = new float[BUFFER_LEN];
+    if (inputData == NULL) {
+        std::cerr << "Not enough memory?" << endl;
+        exit(-1);
+    }
+    
+    //
+    // Initialization I/O
+    //
+    if (params.inputDevice == USE_FILE) {
+        if (!init_file())
+            exit(-1);
+    } else {
+        if (!init_mic())
+            exit(-1);
+    }
+    
+}; /* soundView::soundView() */
+
+
+bool
+soundView::init_file()
+{
+    //
+    // Initialization of libsndfile setup
+    //
+    sndHandle = SndfileHandle(params.inputFilename);
+    
+    if (! sndHandle.rawHandle()) {
+        /* Open failed so print an error message. */
+        std::cerr << "Not able to open input file : " << params.inputFilename << endl ;
+        /* Print the error message from libsndfile. */
+        puts ( sndHandle.strError() );
+        return false;
+    }else {
+        cout << "Opening sound file : " << params.inputFilename << endl;
+        cout << "Frames			: " << sndHandle.frames() << endl;
+        cout << "Sample rate	: " << sndHandle.samplerate() << endl;
+        cout << "Channels		: " << sndHandle.channels() << endl;
+    }
+    
+    if (sndHandle.channels() > MAX_CHANNELS) {
+        printf ("Not able to process more than %d channels\n", MAX_CHANNELS) ;
+        return false;
+    }
+    
+    if (params.outputDevice != paNoDevice) {
+        
+        //
+        // Initializing portaudio output device
+        //
+        
+        if (params.outputDevice == paNoDevice) {
+            return true; // Just return true when no sound output is needed
+        }
+        
+        
+        outputParameters.device = params.outputDevice;
+        if (outputParameters.device == paNoDevice) {
+            std::cerr << "Cannot open output sound device : " << params.outputDevice << endl;
+            return false;
+        }
+        
+        outputParameters.channelCount = 2;       /* stereo output */
+        outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
+        outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+        outputParameters.hostApiSpecificStreamInfo = NULL;
+    }
+
+    return true;
+} /* soundView::init_file() */
+
+bool
+soundView::init_mic()
+{
+
+    //
+    // Initialization of portaudio record stream
+    //
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+        paExitWithError(err);
+    inputParameters.device = Pa_GetDefaultInputDevice();
+    if (inputParameters.device == paNoDevice) {
+        cerr << "Cannot open audio record device!" << endl;
+        paExitWithError(err);
+    }
+    inputParameters.channelCount = 1;
+    inputParameters.sampleFormat = paFloat32;
+    inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
+    inputParameters.hostApiSpecificStreamInfo = NULL;
+    
+    // Use microphone recording don't require playback
+    // So no need to initialize portaudio output
+    
+    return true;
+} /* soundView::init_mic() */
 
 
 //
@@ -294,18 +424,9 @@ main (int argc, char* argv[])
 	return 0 ;
 } /* main */
 
-void
-paExitWithError(PaError err)
-{
-	Pa_Terminate();
-	fprintf( stderr, "An error occured while using the portaudio stream\n" );
-	fprintf( stderr, "Error number: %d\n", err );
-	fprintf( stderr, "Error message: %s\n", Pa_GetErrorText( err ) );
-	exit(err);
-}
 
 sf_count_t
-sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen)
+soundView::sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen)
 {
 	SF_INFO info ;
 

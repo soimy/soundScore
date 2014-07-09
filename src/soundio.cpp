@@ -38,10 +38,11 @@ soundio::Params::Params()
 
 soundio::soundio(const soundio::Params &parameters): params(parameters)
 {
-	init();
+	if(params.input == USE_MIC)
+		init();
 }
 
-bool 
+bool
 soundio::start()
 {
 	if(params.input == USE_MIC){
@@ -59,4 +60,10 @@ soundio::stop()
 	}else{
 		return true;
 	}
+}
+
+bool
+soundio::init()
+{
+    return true;
 }
