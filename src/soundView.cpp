@@ -56,7 +56,7 @@
 using namespace std;
 
 void
-paExitWithError(PaError err)
+soundView::paExitWithError(PaError err)
 {
 	Pa_Terminate();
 	cerr << "An error occured while using the portaudio stream" << endl ;
@@ -70,6 +70,7 @@ soundView::Params::Params()
     inputDevice = USE_MIC;
     outputDevice = paNoDevice;
     inputFilename = nullptr;
+    sampleRate = 44100;
 }; /* soundView::Params::Params() */
 
 soundView::soundView(const soundView::Params &parameters) :
@@ -106,6 +107,61 @@ soundView::soundView(const soundView::Params &parameters) :
     
 }; /* soundView::soundView() */
 
+bool
+soundView::close()
+{
+    Pa_Terminate();
+    return true;
+}; /* soundView::close() */
+
+bool
+soundView::start()
+{
+    PaError err;
+    // First need to check if the stream is occupied
+    if (Pa_IsStreamActive( stream )) {
+        cerr << "!!!! Audio stream is busy !!!!" << endl;
+        return false;
+    }
+    
+    if (params.inputDevice == USE_MIC)
+    {
+        err = Pa_OpenStream(&stream, &inputParameters, NULL, params.sampleRate,
+                                    BUFFER_LEN, paClipOff, RecordCallback, inputData);
+        if(err!=paNoError)
+            paExitWithError( err );
+        err = Pa_StartStream( stream );
+        if(err!=paNoError)
+            paExitWithError( err );
+        cout << ">>>> Now recording , please speak to the microphone. <<<<" << endl;
+    }
+    else
+    {
+        // If no output device assigned, we will leave the matter to playCallback, not here
+        err = Pa_OpenStream(&stream, NULL, &outputParameters, params.sampleRate,
+                            BUFFER_LEN, paClipOff, playCallback, inputData);
+        if(err!=paNoError)
+            paExitWithError( err );
+        err = Pa_StartStream( stream );
+        if(err!=paNoError)
+            paExitWithError( err );
+        if(params.outputDevice == paNoDevice)
+            cout << ">>>> Opening file : " << params.inputFilename << " <<<<" << endl;
+        else
+            cout << ">>>> Playing file : " << params.inputFilename << " <<<<" << endl;
+    }
+    return true;
+} /* soundView::start() */
+
+bool
+soundView::stop()
+{
+    PaError err;
+    err = Pa_CloseStream( stream );
+    if(err != paNoError)
+        paExitWithError(err);
+    return true;
+} /* soundView:stop() */
 
 bool
 soundView::init_file()

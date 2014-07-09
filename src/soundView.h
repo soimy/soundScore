@@ -42,7 +42,6 @@
 #define BUFFER_LEN 512
 
 
-void paExitWithError(PaError err);
 
 enum SNDV_PARAM {
     USE_MIC = 0,
@@ -57,6 +56,7 @@ public:
         SNDV_PARAM inputDevice;
         PaDeviceIndex outputDevice;
         char* inputFilename;
+        double sampleRate;
     };
     
     soundView(const soundView::Params &parameters = soundView::Params());
@@ -69,7 +69,23 @@ private:
     bool init_file();
     bool init_mic();
     // callback in Portaudio stream
-    static int paCallback(	const void *input,
+    static int RecordCallback(	const void *input,
+        void *output,
+        unsigned long framePerBuffer,
+        const PaStreamCallbackTimeInfo *timeInfo,
+        PaStreamCallbackFlags statusFlags,
+        void *userData);
+    
+    int RecordCallbackImpl(	const void *input,
+        void *output,
+        unsigned long framePerBuffer,
+        const PaStreamCallbackTimeInfo *timeInfo,
+        PaStreamCallbackFlags statusFlags,
+        void *userData);
+
+   
+    // callback in Portaudio stream
+    static int playCallback(	const void *input,
         void *output,
         unsigned long framePerBuffer,
         const PaStreamCallbackTimeInfo *timeInfo,
@@ -77,15 +93,9 @@ private:
         void *userData);
 
     static void paStreamFinished(void *userData);
-
-    int paCallbackImpl(	const void *input,
-        void *output,
-        unsigned long framePerBuffer,
-        const PaStreamCallbackTimeInfo *timeInfo,
-        PaStreamCallbackFlags statusFlags,
-        void *userData);
-
+    
     sf_count_t sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen) ;
+    void paExitWithError(PaError err);
     
     PaStream *stream;
     cv::Mat spectogram;		// opencv Mat storing spectogram image
