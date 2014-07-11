@@ -60,7 +60,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "./sound/cicada.wav 150"
+            argument = "sound/cicada.wav"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

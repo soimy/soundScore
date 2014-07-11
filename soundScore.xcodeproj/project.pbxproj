@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2146A950196CC540009BBA27 /* soundio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2146A94E196CC540009BBA27 /* soundio.cpp */; };
 		2146A955196CC572009BBA27 /* soundView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2146A951196CC572009BBA27 /* soundView.cpp */; };
 		2146A956196CC572009BBA27 /* common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2146A952196CC572009BBA27 /* common.cpp */; };
 		2146A959196CC59C009BBA27 /* kiss_fft.c in Sources */ = {isa = PBXBuildFile; fileRef = 2146A957196CC59C009BBA27 /* kiss_fft.c */; };
 		2146A95A196CC59C009BBA27 /* kiss_fftr.c in Sources */ = {isa = PBXBuildFile; fileRef = 2146A958196CC59C009BBA27 /* kiss_fftr.c */; };
+		21994F77196E4F99005D1FD8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 21994F75196E4F99005D1FD8 /* main.cpp */; };
 		219C149A196304D900869EEB /* libopencv_contrib.2.4.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 219C148E196304D900869EEB /* libopencv_contrib.2.4.8.dylib */; };
 		219C149B196304D900869EEB /* libopencv_core.2.4.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 219C148F196304D900869EEB /* libopencv_core.2.4.8.dylib */; };
 		219C149C196304D900869EEB /* libopencv_features2d.2.4.8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 219C1490196304D900869EEB /* libopencv_features2d.2.4.8.dylib */; };
@@ -42,14 +42,13 @@
 
 /* Begin PBXFileReference section */
 		21185E0F196303C400135518 /* soundScore */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = soundScore; sourceTree = BUILT_PRODUCTS_DIR; };
-		2146A94E196CC540009BBA27 /* soundio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = soundio.cpp; path = src/soundio.cpp; sourceTree = SOURCE_ROOT; };
-		2146A94F196CC540009BBA27 /* soundio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = soundio.h; path = src/soundio.h; sourceTree = SOURCE_ROOT; };
 		2146A951196CC572009BBA27 /* soundView.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = soundView.cpp; path = src/soundView.cpp; sourceTree = SOURCE_ROOT; };
 		2146A952196CC572009BBA27 /* common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = common.cpp; path = src/common.cpp; sourceTree = SOURCE_ROOT; };
 		2146A953196CC572009BBA27 /* common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = common.h; path = src/common.h; sourceTree = SOURCE_ROOT; };
 		2146A954196CC572009BBA27 /* soundView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = soundView.h; path = src/soundView.h; sourceTree = SOURCE_ROOT; };
 		2146A957196CC59C009BBA27 /* kiss_fft.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kiss_fft.c; path = src/kiss_fft.c; sourceTree = SOURCE_ROOT; };
 		2146A958196CC59C009BBA27 /* kiss_fftr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = kiss_fftr.c; path = src/kiss_fftr.c; sourceTree = SOURCE_ROOT; };
+		21994F75196E4F99005D1FD8 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = SOURCE_ROOT; };
 		219C148E196304D900869EEB /* libopencv_contrib.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_contrib.2.4.8.dylib; path = /usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_contrib.2.4.8.dylib; sourceTree = "<absolute>"; };
 		219C148F196304D900869EEB /* libopencv_core.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.2.4.8.dylib; path = /usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_core.2.4.8.dylib; sourceTree = "<absolute>"; };
 		219C1490196304D900869EEB /* libopencv_features2d.2.4.8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_features2d.2.4.8.dylib; path = /usr/local/Cellar/opencv/2.4.8.2/lib/libopencv_features2d.2.4.8.dylib; sourceTree = "<absolute>"; };
@@ -113,12 +112,11 @@
 			children = (
 				2146A957196CC59C009BBA27 /* kiss_fft.c */,
 				2146A958196CC59C009BBA27 /* kiss_fftr.c */,
-				2146A951196CC572009BBA27 /* soundView.cpp */,
+				21994F75196E4F99005D1FD8 /* main.cpp */,
 				2146A952196CC572009BBA27 /* common.cpp */,
 				2146A953196CC572009BBA27 /* common.h */,
+				2146A951196CC572009BBA27 /* soundView.cpp */,
 				2146A954196CC572009BBA27 /* soundView.h */,
-				2146A94E196CC540009BBA27 /* soundio.cpp */,
-				2146A94F196CC540009BBA27 /* soundio.h */,
 			);
 			name = src;
 			path = soundScore;
@@ -198,7 +196,7 @@
 			files = (
 				2146A955196CC572009BBA27 /* soundView.cpp in Sources */,
 				2146A959196CC59C009BBA27 /* kiss_fft.c in Sources */,
-				2146A950196CC540009BBA27 /* soundio.cpp in Sources */,
+				21994F77196E4F99005D1FD8 /* main.cpp in Sources */,
 				2146A956196CC572009BBA27 /* common.cpp in Sources */,
 				2146A95A196CC59C009BBA27 /* kiss_fftr.c in Sources */,
 			);

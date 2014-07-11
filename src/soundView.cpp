@@ -17,17 +17,6 @@
 
  */
 
-// libsndfile can handle more than 6 channels but we'll restrict it to 6. */
-#define MAX_CHANNELS 2
-// Mat height & width
-#define WIDTH 512
-#define HEIGHT 200
-
-// Define use visual
-#define USE_VISUAL true
-#define VIS_TOPFREQ 200
-
-
 // Standard include files
 #include <iostream>
 #include <getopt.h>
@@ -53,6 +42,17 @@
 #include "common.h"
 #include "soundView.h"
 
+// libsndfile can handle more than 6 channels but we'll restrict it to 6. */
+#define MAX_CHANNELS 2
+// Mat height & width
+#define WIDTH 512
+#define HEIGHT 200
+
+// Define use visual
+#define USE_VISUAL true
+#define VIS_TOPFREQ 200
+
+
 using namespace std;
 
 void
@@ -67,9 +67,10 @@ soundView::paExitWithError(PaError err)
 
 soundView::Params::Params()
 {
+    // Default setting is using microphone input
     inputDevice = USE_MIC;
     outputDevice = paNoDevice;
-    inputFilename = nullptr;
+//    *inputFilename = '\0';
     sampleRate = 44100;
 }; /* soundView::Params::Params() */
 
@@ -90,7 +91,7 @@ soundView::soundView(const soundView::Params &parameters) :
     // memory allocation of sound data
     inputData = new float[BUFFER_LEN];
     if (inputData == NULL) {
-        std::cerr << "Not enough memory?" << endl;
+		cerr << "Fatal: Not enough memory!" << endl;
         exit(-1);
     }
     
@@ -119,15 +120,16 @@ soundView::start()
 {
     PaError err;
     // First need to check if the stream is occupied
-    if (Pa_IsStreamActive( stream )) {
-        cerr << "!!!! Audio stream is busy !!!!" << endl;
-        return false;
-    }
+//    if (Pa_IsStreamActive( stream )) {
+//        cerr << "!!!! Audio stream is busy !!!!" << endl;
+//        return false;
+//    }
     
     if (params.inputDevice == USE_MIC)
     {
-        err = Pa_OpenStream(&stream, &inputParameters, NULL, params.sampleRate,
-                                    BUFFER_LEN, paClipOff, RecordCallback, inputData);
+//        err = Pa_OpenStream(&stream, &inputParameters, NULL, params.sampleRate,
+//                                    BUFFER_LEN, paClipOff, RecordCallback, this);
+        err = Pa_OpenDefaultStream(&stream, 1, 0, paFloat32, params.sampleRate, BUFFER_LEN, RecordCallback, this);
         if(err!=paNoError)
             paExitWithError( err );
         err = Pa_StartStream( stream );
@@ -138,8 +140,10 @@ soundView::start()
     else
     {
         // If no output device assigned, we will leave the matter to playCallback, not here
-        err = Pa_OpenStream(&stream, NULL, &outputParameters, params.sampleRate,
-                            BUFFER_LEN, paClipOff, playCallback, inputData);
+        sndHandle.seek(0, SEEK_SET); // seek to the start of sound file.
+//        err = Pa_OpenStream(&stream, NULL, &outputParameters, params.sampleRate,
+//                            BUFFER_LEN, paClipOff, playCallback, this);
+        err = Pa_OpenDefaultStream(&stream, 0, 2, paFloat32, params.sampleRate, BUFFER_LEN, playCallback, this);
         if(err!=paNoError)
             paExitWithError( err );
         err = Pa_StartStream( stream );
@@ -163,6 +167,20 @@ soundView::stop()
     return true;
 } /* soundView:stop() */
 
+void
+soundView::setLevels(const float _volume, const float _max_db, const float _floor_db)
+{
+    volume = _volume;
+    max_db = _max_db;
+    floor_db = _floor_db;
+}
+
+cv::Mat
+soundView::Spectogram()
+{
+    return spectogram;
+}
+
 bool
 soundView::init_file()
 {
@@ -179,38 +197,35 @@ soundView::init_file()
         return false;
     }else {
         cout << "Opening sound file : " << params.inputFilename << endl;
-        cout << "Frames			: " << sndHandle.frames() << endl;
-        cout << "Sample rate	: " << sndHandle.samplerate() << endl;
-        cout << "Channels		: " << sndHandle.channels() << endl;
+        cout << "Frames             : " << sndHandle.frames() << endl;
+        cout << "Sample rate        : " << sndHandle.samplerate() << endl;
+        cout << "Channels           : " << sndHandle.channels() << endl;
     }
     
     if (sndHandle.channels() > MAX_CHANNELS) {
         printf ("Not able to process more than %d channels\n", MAX_CHANNELS) ;
         return false;
     }
+
+    //
+    // Initializing portaudio output device
+    //
+    PaError err = Pa_Initialize();
+    if (err != paNoError)
+        paExitWithError(err);
     
-    if (params.outputDevice != paNoDevice) {
-        
-        //
-        // Initializing portaudio output device
-        //
-        
-        if (params.outputDevice == paNoDevice) {
-            return true; // Just return true when no sound output is needed
-        }
-        
-        
-        outputParameters.device = params.outputDevice;
-        if (outputParameters.device == paNoDevice) {
-            std::cerr << "Cannot open output sound device : " << params.outputDevice << endl;
-            return false;
-        }
-        
-        outputParameters.channelCount = 2;       /* stereo output */
-        outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
-        outputParameters.suggestedLatency = Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
-        outputParameters.hostApiSpecificStreamInfo = NULL;
-    }
+    outputParameters.device = params.outputDevice;
+//    if (outputParameters.device == paNoDevice) {
+//        std::cerr   << "Cannot open output sound device : "
+//                    << params.outputDevice << endl;
+//        return false;
+//    }
+    
+//    outputParameters.channelCount = 2;       /* stereo output */
+//    outputParameters.sampleFormat = paFloat32; /* 32 bit floating point output */
+//    outputParameters.suggestedLatency =
+//        Pa_GetDeviceInfo( outputParameters.device )->defaultLowOutputLatency;
+//    outputParameters.hostApiSpecificStreamInfo = NULL;
 
     return true;
 } /* soundView::init_file() */
@@ -232,7 +247,8 @@ soundView::init_mic()
     }
     inputParameters.channelCount = 1;
     inputParameters.sampleFormat = paFloat32;
-    inputParameters.suggestedLatency = Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
+    inputParameters.suggestedLatency =
+        Pa_GetDeviceInfo( inputParameters.device )->defaultLowInputLatency;
     inputParameters.hostApiSpecificStreamInfo = NULL;
     
     // Use microphone recording don't require playback
@@ -245,33 +261,119 @@ soundView::init_mic()
 //
 // Portaudio callback function : FileIn
 //
-int paFileCallback(	const void *input,
+int
+soundView::RecordCallback(const void *input,
+                          void *output,
+                          unsigned long framePerBuffer,
+                          const PaStreamCallbackTimeInfo *timeInfo,
+                          PaStreamCallbackFlags statusFlags,
+                          void *userData)
+{
+    return ((soundView*)userData)->RecordCallbackImpl(input, output,
+                        framePerBuffer, timeInfo, statusFlags);
+} /* soundView::RecordCallback */
+
+int
+soundView::RecordCallbackImpl(	const void *input,
 					void *output,
 					unsigned long framePerBuffer,
 					const PaStreamCallbackTimeInfo *timeInfo,
-					PaStreamCallbackFlags statusFlags,
-					void *userData)
+					PaStreamCallbackFlags statusFlags)
 {
-	sndData* data = (sndData*)userData;
-	float* out = (float*)output;
+	const float* rptr = (const float*)input;
 	size_t i;
 
-	(void) input;
+	(void) output;
 	(void) timeInfo;
 	(void) statusFlags;
 
-	// Read sndfile in, check if the file reach the end?
-	// If so, return to the start of sndfile
-	//
-	int readcount = sf_read_float(data->sndfile, data->data, BUFFER_LEN);
-	if(readcount < BUFFER_LEN)
-		sf_seek(data->sndfile, 0, SEEK_SET);
-
 	// fill output stream with libsndfile data
 	for(i=0; i<framePerBuffer; i++ ){
-		*out++ = data->data[i] * data->volume;
+		*inputData = *rptr * volume; // multiply by volume setting
+        inputData++, rptr++;
 	}
+    drawBuffer(inputData);
+    return paContinue;
+} /* soundView:RecordCallbackImpl */
 
+//
+// Portaudio callback function : FileIn
+//
+int
+soundView::playCallback(const void *input,
+                          void *output,
+                          unsigned long framePerBuffer,
+                          const PaStreamCallbackTimeInfo *timeInfo,
+                          PaStreamCallbackFlags statusFlags,
+                          void *userData)
+{
+    return ((soundView*)userData)->RecordCallbackImpl(input, output,
+                        framePerBuffer, timeInfo, statusFlags);
+} /* soundView::playCallback */
+
+int
+soundView::playCallbackImpl(	const void *input,
+					void *output,
+					unsigned long framePerBuffer,
+					const PaStreamCallbackTimeInfo *timeInfo,
+					PaStreamCallbackFlags statusFlags)
+{
+	float* wptr = (float*)output;
+	size_t i;
+
+	(void) input ;
+	(void) timeInfo;
+	(void) statusFlags;
+
+	// If it's dual channel audio, double the read buffer
+    // And downsample to mono data
+    unsigned int chn = sndHandle.channels();
+    if (chn > 1) {
+        float* steroData = new float[framePerBuffer * chn];
+        sndHandle.read(steroData, framePerBuffer * chn);
+        for (i=0; i<framePerBuffer; i++) {
+            float mix = 0;
+            for(int j = 0; j < chn; j++)
+                mix += steroData[ i * chn + j ];
+            *inputData++ = mix/chn;
+        }
+        
+    }else
+        sndHandle.read(inputData, framePerBuffer);
+    
+
+    // If has playback device supplied
+	// fill output stream with libsndfile data
+    if (params.outputDevice != paNoDevice) {
+        for(i=0; i<framePerBuffer; i++ ){
+            *wptr++ = *inputData * volume;
+            if( sndHandle.channels() == 2 ){
+                inputData ++;
+                *wptr++ = *inputData++ * volume;
+            } else {
+                *wptr++ = *inputData++ * volume;
+            }
+        }
+    }
+    
+	// Read sndfile in, check if the file reach the end?
+	// If so, return to the start of sndfile (loop)
+    // Or, finish playing with paComplete
+	if(ARRAY_LEN(inputData) < framePerBuffer) {
+        // sndHandle.seek(0, SEEK_SET);
+        cout << "Playback finished, Press 'r' to replay." << endl;
+        return paComplete;
+    }
+    
+    return paContinue;
+} /* soundView::playbackImpl */
+
+void
+soundView::drawBuffer(const void* input)
+{
+
+    const float* data = (const float*)input;
+    size_t i;
 	//
 	// Do time domain windowing and FFT convertion
 	//
@@ -279,250 +381,35 @@ int paFileCallback(	const void *input,
 	kiss_fft_scalar in_win[ 2 * BUFFER_LEN];
 
 	for(i=0; i<BUFFER_LEN; i++){
-		data->in[i] = data->in[ BUFFER_LEN + i ];
-		data->in[ BUFFER_LEN + i ] = data->data[i];
+		in[i] = in[ BUFFER_LEN + i ];
+		in[ BUFFER_LEN + i ] = data[i];
 	}
 
-	apply_window(in_win, data->in , 2 * BUFFER_LEN);
-	kiss_fftr(data->fftcfg, in_win, data->out);
+	apply_window(in_win, in , 2 * BUFFER_LEN);
+	kiss_fftr(fftcfg, in_win, out);
 
 	// 0Hz set to 0
 	mag[0] = 0;
 	//data->max_db = 0;
 	for(int i = 1; i < BUFFER_LEN; i++){
-		mag[i] = std::sqrtf(data->out[i].i * data->out[i].i +
-							data->out[i].r * data->out[i].r);
+		mag[i] = std::sqrtf(out[i].i * out[i].i +
+							out[i].r * out[i].r);
 		// Convert to dB range 20log10(v1/v2)
 		mag[i] = 20 * log10(mag[i]);
 		// Convert to RGB space
-		mag[i] = linestep(mag[i], data->floor_db, data->max_db) * 255;
+		mag[i] = linestep(mag[i], floor_db, max_db) * 255;
 	}
 	interp_spec(interp_mag, HEIGHT, mag, VIS_TOPFREQ); // Draw sound spectogram
 
-	cv::line(data->specMat, cv::Point2i(data->col,0), cv::Point2i(data->col,HEIGHT), cv::Scalar(0,0,0));
-	cv::line(data->specMat, cv::Point2i(data->col+1,0), cv::Point2i(data->col+1,HEIGHT), cv::Scalar(0,0,255));
+	cv::line(spectogram, cv::Point2i(col,0), cv::Point2i(col,HEIGHT), cv::Scalar(0,0,0));
+	cv::line(spectogram, cv::Point2i(col+1,0), cv::Point2i(col+1,HEIGHT), cv::Scalar(0,0,255));
 	for(int row = 0; row < HEIGHT; row++){
-		data->specMat.at<cv::Vec3b>(row, data->col)
+		spectogram.at<cv::Vec3b>(row, col)
 			= cv::Vec3b(	interp_mag[row],
 							interp_mag[row],
 							interp_mag[row]);
 	}
-	data->col = (data->col+1) % WIDTH;
+	col = (col+1) % WIDTH;
+} /* soundView::drawBuffer */
 
-	return 0;
-}
-
-void
-help(){
-	//printf("Usage: soundScore [file1.wav] [drawThreshold 0-200]\n");
-	std::cout << "Usage : soundView [-h] [-v volume] [-t Max_dB] [-f Floor_dB] filename" << endl;
-}
-
-int
-main (int argc, char* argv[])
-{
-	//float data [ BUFFER_LEN ] ;
-	//SNDFILE *stdfile ;
-	//SF_INFO sfinfo ;
-
-	sndData paUserData;
-
-	//
-	// Commandline argument processing
-	//
-	if(argc < 2){
-		help();
-		return 1;
-	}
-
-	// Setup default argument
-	paUserData.max_db = 80;
-	paUserData.floor_db = -180;
-	paUserData.volume = 0.2;
-
-	int optionChar, prev_ind;
-	while(prev_ind = optind, (optionChar = getopt(argc,argv,"hv:t:f:"))!=EOF){
-		if(optind == prev_ind + 2 && *optarg == '-' && atoi(optarg)==0){
-			optionChar = ':';
-			-- optind;
-		}
-		switch(optionChar){
-			case 'v':
-				paUserData.volume = atof(optarg);
-				cout << "Volume		:" << paUserData.volume << endl;
-				break;
-			case 'f':
-				paUserData.floor_db = atoi(optarg);
-				cout << "Floor dB	:" << paUserData.floor_db<< endl;
-				break;
-			case 't':
-				paUserData.max_db = atoi(optarg);
-				cout << "Max dB		:" << paUserData.max_db<< endl;
-				break;
-			case '?':
-			case ':':
-				cerr << "Argument error !" << endl;
-			case 'h':
-				help();
-				return 1;
-				break;
-		}
-	}
-
-	char* fileName;
-	if(optind < argc){
-		fileName = argv[optind];
-	} else {
-		cout << "Sound file name must be specified." << endl;
-		return 1;
-	}
-
-	//
-	// Initialization of libsndfile setup
-	//
-
-	// The SF_INFO struct must be initialized before using it.
-	memset(&(paUserData.sfinfo), 0, sizeof(paUserData.sfinfo));
-	//paUserData->sfinfo = sfinfo;
-
-	if (! (paUserData.sndfile = sf_open(fileName, SFM_READ, &paUserData.sfinfo))) {
-		/* Open failed so print an error message. */
-		printf ("Not able to open input file %s.\n", fileName) ;
-		/* Print the error message from libsndfile. */
-		puts (sf_strerror(NULL));
-		return	1 ;
-	}else {
-		printf("frames		:%d\n", (int)paUserData.sfinfo.frames);
-		printf("sampleRate	:%d\n", paUserData.sfinfo.samplerate);
-		printf("channels	:%d\n", paUserData.sfinfo.channels);
-	}
-
-	if (paUserData.sfinfo.channels > MAX_CHANNELS) {
-		printf ("Not able to process more than %d channels\n", MAX_CHANNELS) ;
-		return	1 ;
-	}
-
-	//
-	// Initialization of portaudio
-	//
-	PaError err;
-	//PaStreamParameters outputParam;
-	PaStream* stream;
-
-	err = Pa_Initialize();
-	if(err != paNoError)
-		paExitWithError(err);
-
-	err = Pa_OpenDefaultStream( &stream,
-								0,								// no input channels
-								paUserData.sfinfo.channels,		// output channels
-								paFloat32,						// 32 bit floating point output
-								paUserData.sfinfo.samplerate,	// audio sampleRate
-								BUFFER_LEN,						// frames per buffer
-								paFileCallback,					// signal process callback function
-								&paUserData);					// data pass to callback
-	if(err != paNoError)
-		paExitWithError(err);
-
-
-	//
-	// Initialization of Opencv
-	//
-	paUserData.specMat = cv::Mat(cv::Size(WIDTH, HEIGHT),CV_8UC3);
-	paUserData.winName = "WAV Spectorgram";
-	paUserData.col = 0;
-	cv::namedWindow(paUserData.winName);
-	int keyCode;
-
-	//
-	// Initialization of FFT
-	//
-	paUserData.fftcfg = kiss_fftr_alloc( 2 * BUFFER_LEN, 0, NULL, NULL);
-	if(paUserData.fftcfg == NULL){
-		printf("Fatal: Not enough memory!\n");
-		return 1;
-	}
-
-
-	//
-	// The main loop
-	//
-
-	// First, start portaudio stream
-	err = Pa_StartStream( stream );
-	if( err != paNoError ) paExitWithError( err );
-
-	while (true)
-	{
-		cv::imshow(paUserData.winName, paUserData.specMat);
-		keyCode = cv::waitKey(20);
-		if(keyCode == 'q' || keyCode == 'Q')
-		{
-			break;
-		}
-
-	} ;
-
-	// Stop the portAudio stream
-	err = Pa_StopStream( stream );
-	if( err != paNoError ) paExitWithError( err );
-
-	err = Pa_CloseStream( stream );
-	if( err != paNoError ) paExitWithError( err );
-
-	Pa_Terminate();
-	printf("Finished playing.\n");
-
-	/* Close input and output files. */
-	sf_close (paUserData.sndfile) ;
-	kiss_fftr_free(paUserData.fftcfg);
-
-	return 0 ;
-} /* main */
-
-
-sf_count_t
-soundView::sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen)
-{
-	SF_INFO info ;
-
-#if HAVE_SF_GET_INFO
-	/*
-	**	The function sf_get_info was in a number of 1.0.18 pre-releases but was removed
-	**	before 1.0.18 final and replaced with the SFC_GET_CURRENT_SF_INFO command.
-	*/
-	sf_get_info (file, &info) ;
-#else
-	sf_command (file, SFC_GET_CURRENT_SF_INFO, &info, sizeof (info)) ;
-#endif
-
-	if (info.channels == 1)
-		return sf_read_double (file, data, datalen) ;
-
-	static double multi_data [2048] ;
-	int k, ch, frames_read ;
-	sf_count_t dataout = 0 ;
-
-	while (dataout < datalen)
-	{	int this_read ;
-
-		this_read = MIN (ARRAY_LEN (multi_data) / info.channels, datalen) ;
-
-		frames_read = sf_readf_double (file, multi_data, this_read) ;
-		if (frames_read == 0)
-			break ;
-
-		for (k = 0 ; k < frames_read ; k++)
-		{	double mix = 0.0 ;
-
-			for (ch = 0 ; ch < info.channels ; ch++)
-				mix += multi_data [k * info.channels + ch] ;
-			data [dataout + k] = mix / info.channels ;
-			} ;
-
-		dataout += this_read ;
-		} ;
-
-	return dataout ;
-} /* sfx_mix_mono_read_double */
 

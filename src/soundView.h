@@ -64,6 +64,8 @@ public:
     bool close();
     bool start();
     bool stop();
+    void setLevels(const float _volume, const float _max_db, const float _floor_db);
+    cv::Mat Spectogram();
 
 private:
     bool init_file();
@@ -80,8 +82,7 @@ private:
         void *output,
         unsigned long framePerBuffer,
         const PaStreamCallbackTimeInfo *timeInfo,
-        PaStreamCallbackFlags statusFlags,
-        void *userData);
+        PaStreamCallbackFlags statusFlags );
 
    
     // callback in Portaudio stream
@@ -91,14 +92,20 @@ private:
         const PaStreamCallbackTimeInfo *timeInfo,
         PaStreamCallbackFlags statusFlags,
         void *userData);
-
-    static void paStreamFinished(void *userData);
     
-    sf_count_t sfx_mix_mono_read_double (SNDFILE * file, double * data, sf_count_t datalen) ;
+    int playCallbackImpl(	const void *input,
+        void *output,
+        unsigned long framePerBuffer,
+        const PaStreamCallbackTimeInfo *timeInfo,
+        PaStreamCallbackFlags statusFlags );
+    
+    void drawBuffer(const void* input);
+    
     void paExitWithError(PaError err);
     
     PaStream *stream;
     cv::Mat spectogram;		// opencv Mat storing spectogram image
+    unsigned int col;       // current columne in Mat drawing
 
     // kiss_fft data
     kiss_fft_scalar in[BUFFER_LEN*2];
