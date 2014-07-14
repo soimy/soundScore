@@ -54,18 +54,32 @@ public:
     struct Params{
         Params();
         SNDV_PARAM inputDevice;
-        PaDeviceIndex outputDevice;
+		PaDeviceIndex outputDevice;
         char* inputFilename;
         double sampleRate;
     };
     
     soundView(const soundView::Params &parameters = soundView::Params());
     ~soundView();
-    bool close();
+
+	// Controling functions
     bool start();
     bool stop();
+
+	// Setting function
     void setLevels(const float _volume, const float _max_db, const float _floor_db);
+
+	// Querying functions
+	bool isPlayback();
+	bool isRecord();
+	int isPlaying();
+
+	// Output function
     cv::Mat Spectogram();
+    
+	// Static functions
+    static void init();
+    static void close();
 
 private:
     bool init_file();
@@ -101,9 +115,11 @@ private:
     
     void drawBuffer(const void* input);
     
-    void paExitWithError(PaError err);
-    
+	// portaudio variables
     PaStream *stream;
+	PaStreamParameters inputParams, outputParams;
+
+	// opencv variables
     cv::Mat spectogram;		// opencv Mat storing spectogram image
     unsigned int col;       // current columne in Mat drawing
 
@@ -115,9 +131,6 @@ private:
     // libsndfile data
     SndfileHandle sndHandle;
 
-    // portaudio params
-    PaStreamParameters inputParameters, outputParameters;
-    
     // sound core data
     float *inputData;
     float volume, floor_db, max_db;

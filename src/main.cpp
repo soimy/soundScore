@@ -20,6 +20,7 @@
 #include <iostream>
 #include <getopt.h>
 #include "soundView.h"
+#include "common.h"
 
 #define SAMPLERATE 44100
 
@@ -28,10 +29,11 @@ using namespace std;
 void
 help(char* command){
 	std::cout   << "Usage : " << command
-                << "    [-h] [-r] [-v volume] [-t Max_dB] [-f Floor_dB] [filename]" << endl
+                << "    [-hrp] [-vtfos arguments] [filename]" << endl
                 << endl
                 << "    -h              : view this help" << endl
                 << "    -r              : record audio from system microphone" << endl
+                << "    -p              : playback audio" << endl
                 << "    -v volume       : set the input/output volume level(dB), default = 1" << endl
                 << "    -t Max_dB       : set the max visualized level(dB), default = 200dB" << endl
                 << "    -f floor_dB     : set the min visualized level(dB), default = -180dB" << endl
@@ -39,12 +41,35 @@ help(char* command){
                 << "    -s basefile     : compare with basefile and output score" << endl
                 << "    filename        : input audio file (WAV|OGG|FLAC supported)" << endl
                 << "                      if has '-r', this file is ignored." << endl;
-    
+
 }
 
 int
 score(cv::Mat mat1, cv::Mat mat2){
     return std::rand()*100;
+}
+
+bool
+phrase(soundView *view)
+{
+    int keyCode;
+    cv::Mat specMat = view->Spectogram();
+    view->start();
+    if(view->isPlayback())
+    {
+        std::cout << "[Info] Press 'q' to terminate." << endl ;
+        while(view->isPlaying())
+        {
+            cv::imshow("Spectogram", specMat);
+            keyCode = cv::waitKey(20);
+            if(keyCode == 'q' || keyCode == 'Q')
+            {
+                view->stop();
+                break;
+            }
+        }
+    }
+    return true;
 }
 
 int
@@ -65,9 +90,10 @@ main (int argc, char* argv[])
     char *fn_outputImage, *fn_baseAudio, *fn_input;
     bool isRecord = false;
     bool isScore = false;
+    bool isPlayback = false;
 
 	int optionChar, prev_ind;
-	while(prev_ind = optind, (optionChar = getopt(argc,argv,"hrv:t:f:o:s:"))!=EOF){
+	while(prev_ind = optind, (optionChar = getopt(argc,argv,"hrpv:t:f:o:s:"))!=EOF){
 		if(optind == prev_ind + 2 && *optarg == '-' && atoi(optarg)==0){
 			optionChar = ':';
 			-- optind;
@@ -75,34 +101,38 @@ main (int argc, char* argv[])
 		switch(optionChar){
 			case 'v':
 				volume = atof(optarg);
-				cout << "Volume		:" << volume << endl;
+				cout << "Volume             : " << volume << endl;
 				break;
 			case 'f':
 				floor_db = atoi(optarg);
-				cout << "Floor dB	:" << floor_db << endl;
+				cout << "Floor dB           : " << floor_db << endl;
 				break;
 			case 't':
 				max_db = atoi(optarg);
-				cout << "Max dB		:" << max_db << endl;
+				cout << "Max dB             : " << max_db << endl;
 				break;
             case 'r':
                 isRecord = true;
-                cout << "Record MIC :" << isRecord << endl;
+                cout << "Record MIC         : " << isRecord << endl;
+                break;
+            case 'p':
+                isPlayback = true;
+                cout << "isPlayback         : " << isPlayback << endl;
                 break;
             case 'o':
-                fn_outputImage = new char[sizeof(optarg)];
+                fn_outputImage = new char[ARRAY_LEN(optarg)+1];
                 strcpy(fn_outputImage, optarg);
-                cout << "Save image :" << fn_outputImage << endl;
+                cout << "Output             : " << fn_outputImage << endl;
                 break;
             case 's':
                 isScore = true;
-                fn_baseAudio = new char[sizeof(optarg)];
+                fn_baseAudio = new char[ARRAY_LEN(optarg)+1];
                 strcpy(fn_baseAudio, optarg);
-                cout << "Score with :" << fn_baseAudio << endl;
+                cout << "Score with         : " << fn_baseAudio << endl;
                 break;
 			case '?':
 			case ':':
-				cerr << "Argument error !" << endl;
+				cerr << "[Error] Argument error." << endl;
 			case 'h':
 				help(argv[0]);
 				return 1;
@@ -110,99 +140,78 @@ main (int argc, char* argv[])
 		}
 	}
 
-    // Check whether use microphone, if not, a input audio file is needed
+    // Check whether using microphone, if not, a input audio file is needed
     if (!isRecord) {
         if(optind < argc){
-            fn_input = new char[sizeof(argv[optind])];
+            fn_input = new char[ARRAY_LEN(argv[optind])+1];
             strcpy(fn_input, argv[optind]);
         } else {
-            cout << "Sound file name must be specified." << endl;
+            cerr << "[Error] Sound file name must be specified." << endl;
             return 1;
         }
     }
-	
+
 
 	//
 	// Initialization of soundView class
 	//
     soundView *inputView, *scoreView;
-    soundView::Params inputParams;
+    soundView::Params inputParams, scoreParams;
     inputParams.sampleRate = SAMPLERATE;
-    
-    if (isRecord) {
-        inputParams = soundView::Params(); // default setting is USE_MIC
-    } else {
+
+    inputParams = soundView::Params(); // default setting is USE_MIC
+    if (!isRecord) {
         inputParams.inputDevice = USE_FILE;
-        inputParams.inputFilename = new char[sizeof(fn_input)-1];
+        inputParams.inputFilename = new char[ARRAY_LEN(fn_input)+1];
         strcpy(inputParams.inputFilename, fn_input);
-        inputParams.outputDevice = Pa_GetDefaultOutputDevice();
+        inputParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
+        //inputParams.sampleRate = SAMPLERATE;
     }
     inputView = new soundView(inputParams);
     inputView->setLevels(volume, max_db, floor_db);
 
     if (isScore) {
-        soundView::Params scoreParams;
-        scoreParams.sampleRate = SAMPLERATE;
+        //scoreParams.sampleRate = SAMPLERATE;
         scoreParams.inputDevice = USE_FILE;
-        scoreParams.outputDevice = Pa_GetDefaultOutputDevice();
-        scoreParams.inputFilename = fn_baseAudio;
-        scoreView = new soundView(scoreParams);
-        scoreView->setLevels(volume, max_db, floor_db);
+        scoreParams.inputFilename = new char[ARRAY_LEN(fn_baseAudio)+1];
+        strcpy(scoreParams.inputFilename, fn_baseAudio);
+        scoreParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
     }
-    
+    scoreView = new soundView(scoreParams);
+    scoreView->setLevels(volume, max_db, floor_db);
+
+    // Initialize the Portaudio
+    soundView::init();
+
 	//
 	// The main loop
 	//
     cv::namedWindow("Spectogram");
     cv::Mat displayMat;
-    char keyCode;
-    bool inScore = false;
-    
-    // If use score, play base audio first
+    //bool inScore = false;
+
+    //
+    // Phrase 1 : Load the score base audio
+    //
     if (isScore) {
-        cout << ">>>> Now player sample audio <<<<" << endl;
-        scoreView->start();
-        displayMat = scoreView->Spectogram();
-        inScore = true;
-    } else if (isRecord) {
-        cout << "Press 't' to start recording, press 't' again to stop" << endl;
-        displayMat = inputView->Spectogram();
-        inScore = false;
-    } else {
-        displayMat = inputView->Spectogram();
-        inputView->start();
+        phrase(scoreView);
     }
-    
-	while (true)
-	{
-		cv::imshow("Spectogram", displayMat);
-		keyCode = cv::waitKey(20);
-		if (keyCode == 'q' || keyCode == 'Q') {
-			break;
-		}
-        if (keyCode == 'r' || keyCode == 'R') {
-            keyCode = '0';
-            if(inScore) scoreView->start();
-            else inputView->start();
-        }
-        if (keyCode == 't' || keyCode == 'T') {
-            keyCode = '0';
-            if(!inputView->start()) {
-                inputView->stop();
-                if(isScore)
-                    cout << "Score : " <<
-                    score(scoreView->Spectogram(), inputView->Spectogram()) << endl;
-                break;
-            }
-        }
 
-	} ;
+    //
+    // Phrase 2 : Load the input audio
+    // if USE_MIC, start recording and draw Spectogram
+    // if USE_FILE, playback and draw Spectogram
+    //
+    phrase(inputView);
 
-	// Stop the portAudio stream
-    if (isRecord) {
-        scoreView->stop();
-    }
-    inputView->stop();
-    
+
+    // Print the score
+    if(isScore)
+        std::cout << "[Score] " << score(scoreView->Spectogram(), inputView->Spectogram()) << endl;
+
+
+    // Close the portaudio
+    soundView::close();
 	return 0 ;
 } /* main */
+
