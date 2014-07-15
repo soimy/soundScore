@@ -22,7 +22,7 @@
 #include <assert.h>
 #include "common.h"
 
-#define MAX_HEIGHT 1024
+#define MAX_HEIGHT 2048 
 
 using namespace std;
 

@@ -76,7 +76,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-s sound/tiger.wav"
+            argument = "-s sound/Computer04.wav"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

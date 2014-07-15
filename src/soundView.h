@@ -41,8 +41,6 @@
 // Define buffer length to hold the sound data
 #define BUFFER_LEN 512
 
-
-
 enum SNDV_PARAM {
     USE_MIC = 0,
     USE_FILE = 1
@@ -114,6 +112,7 @@ private:
         PaStreamCallbackFlags statusFlags );
     
     void drawBuffer(const void* input);
+    void drawRawBuffer(const void* input);
     
 	// portaudio variables
     PaStream *stream;
@@ -124,7 +123,7 @@ private:
     unsigned int col;       // current columne in Mat drawing
 
     // kiss_fft data
-    kiss_fft_scalar in[BUFFER_LEN*2];
+    kiss_fft_scalar in[BUFFER_LEN*2] = {0};
     kiss_fft_cpx out[BUFFER_LEN*2];
     kiss_fftr_cfg fftcfg;
 

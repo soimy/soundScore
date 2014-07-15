@@ -48,7 +48,36 @@ help(char* command){
 
 int
 score(cv::Mat mat1, cv::Mat mat2){
-    return std::rand();
+    cv::Mat v1, v2;
+    cv::cvtColor(mat1, v1, CV_BGR2GRAY);
+    cv::cvtColor(mat2, v2, CV_BGR2GRAY);
+    cv::MatND hist1,hist2;
+    
+    /// Using 50 bins for hue and 60 for saturation
+    int bins = 256;
+    int histSize[] = { bins };
+    
+    // hue varies from 0 to 179, saturation from 0 to 255
+    float l_ranges[] = { 0, 256 };
+    
+    const float* ranges[] = { l_ranges };
+    
+    // Use the o-th and 1-st channels
+    int channels[] = { 0 };
+    
+    // Calculate the histograms for the HSV images
+    calcHist( &v1, 1, channels, cv::Mat(), hist1, 1, histSize, ranges, true, false );
+    normalize( hist1, hist1, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
+    
+    calcHist( &v2, 1, channels, cv::Mat(), hist2, 1, histSize, ranges, true, false );
+    normalize( hist2, hist2, 0, 1, cv::NORM_MINMAX, -1, cv::Mat() );
+    
+    float res, base;
+    res = cv::compareHist(hist1, hist2, 0);
+    base = cv::compareHist(hist1, hist1, 0);
+//    cout << res << " | " << base << endl;
+    return  100 - (base - res)  * 300000;
+//    return std::rand()k
 }
 
 bool

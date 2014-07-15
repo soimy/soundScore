@@ -46,13 +46,10 @@
 #define MAX_CHANNELS 2
 // Mat height & width
 #define WIDTH 512
-#define HEIGHT 200
-
+#define HEIGHT 256
 // Define use visual
 #define USE_VISUAL true
-#define VIS_TOPFREQ 200
-
-
+#define VIS_TOPFREQ 256
 using namespace std;
 
 void
@@ -464,7 +461,7 @@ soundView::drawBuffer(const void* input)
         mag[i] = linestep(mag[i], floor_db, max_db) * 255;
         max_mag = std::max(max_mag, mag[i]);
     }
-    if (max_mag > 0) {
+    if (max_mag > 0 && col < WIDTH) {
         interp_spec(interp_mag, HEIGHT, mag, VIS_TOPFREQ); // Draw sound spectogram
 
         cv::line(spectogram, cv::Point2i(col,0), cv::Point2i(col,HEIGHT), cv::Scalar(0,0,0));
@@ -475,8 +472,55 @@ soundView::drawBuffer(const void* input)
                                 interp_mag[row],
                                 interp_mag[row]);
         }
+        // col = (col+1) % WIDTH;
+        col++;
+    }
+} /* soundView::drawBuffer */
+
+void
+soundView::drawRawBuffer(const void* input)
+{
+
+    const float* data = (const float*)input;
+    size_t i;
+    //
+    // Do time domain windowing and FFT convertion
+    //
+    float mag [ BUFFER_LEN ];
+
+    for(i=0; i<BUFFER_LEN; i++){
+        in[i] = in[ BUFFER_LEN + i ];
+        in[ BUFFER_LEN + i ] = data[i];
+    }
+
+    kiss_fftr(fftcfg, in, out);
+
+    // 0Hz set to 0
+    mag[0] = 0;
+    float max_mag = 0;
+    for(int i = 1; i < BUFFER_LEN; i++){
+        mag[i] = std::sqrtf(out[i].i * out[i].i +
+                            out[i].r * out[i].r);
+        // Convert to dB range 20log10(v1/v2)
+        mag[i] = 20 * log10(mag[i]);
+        // Convert to RGB space
+        mag[i] = linestep(mag[i], floor_db, max_db) * 255;
+        max_mag = std::max(max_mag, mag[i]);
+    }
+    if (max_mag > 0) {
+
+        cv::line(spectogram, cv::Point2i(col,0), cv::Point2i(col,HEIGHT), cv::Scalar(0,0,0));
+        cv::line(spectogram, cv::Point2i(col+1,0), cv::Point2i(col+1,HEIGHT), cv::Scalar(0,0,255));
+        for(int row = 0; row < HEIGHT; row++){
+            spectogram.at<cv::Vec3b>(row, col)
+                = cv::Vec3b(    mag[row],
+                                mag[row],
+                                mag[row]);
+        }
         col = (col+1) % WIDTH;
     }
 } /* soundView::drawBuffer */
+
+
 
 
