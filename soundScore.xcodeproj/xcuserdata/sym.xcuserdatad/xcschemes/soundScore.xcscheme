@@ -76,6 +76,10 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-s sound/tiger.wav"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "sound/cicada.wav"
             isEnabled = "YES">
          </CommandLineArgument>

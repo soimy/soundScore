@@ -48,7 +48,7 @@ help(char* command){
 
 int
 score(cv::Mat mat1, cv::Mat mat2){
-    return std::rand()*100;
+    return std::rand();
 }
 
 bool
@@ -187,7 +187,7 @@ main (int argc, char* argv[])
     // Phrase 1 : Load the score base audio
     //
     if (isScore) {
-        
+
         // initialize soundView scoreView
         scoreParams.sampleRate = SAMPLERATE;
         scoreParams.inputDevice = USE_FILE;
@@ -196,7 +196,7 @@ main (int argc, char* argv[])
         scoreParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
         scoreView = new soundView(scoreParams);
         scoreView->setLevels(volume, max_db, floor_db);
-        
+
         phrase(scoreView);
     }
 

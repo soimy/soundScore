@@ -22,6 +22,8 @@
 #include <assert.h>
 #include "common.h"
 
+#define MAX_HEIGHT 1024
+
 using namespace std;
 
 static float
@@ -105,7 +107,7 @@ void
 apply_window (float * out, const float * data, int datalen)
 {
 	assert(ARRAY_LEN(out) != datalen);
-	float window [ 2 * datalen ] ;
+	static float window [ 2 * MAX_HEIGHT] ;
 	static int window_len = 0 ;
 	int k ;
 	if (window_len != datalen) {

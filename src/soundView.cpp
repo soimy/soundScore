@@ -74,7 +74,7 @@ soundView::Params::Params()
 }; /* soundView::Params::Params() */
 
 soundView::soundView(const soundView::Params &parameters) :
-    volume(1), floor_db(0), max_db(200),
+    stream(0), volume(1), floor_db(0), max_db(200), col(0),
     spectogram(cv::Size(WIDTH,HEIGHT),CV_8UC3), params(parameters)
 {
 
@@ -88,7 +88,6 @@ soundView::soundView(const soundView::Params &parameters) :
     }
 
     // memory allocation of sound data
-    stream = 0;
     inputData = new float[BUFFER_LEN];
     if (inputData == NULL) {
         cerr << "[Error] Not enough memory!" << endl;
@@ -221,6 +220,7 @@ soundView::stop()
     err = Pa_CloseStream( stream );
     if(err != paNoError)
         paExitWithError(err);
+    //cout << "[Info] Audio stream closed for this session." << endl;
     return true;
 } /* soundView:stop() */
 
@@ -235,7 +235,10 @@ soundView::setLevels(const float _volume, const float _max_db, const float _floo
 bool
 soundView::isPlayback()
 {
-    return params.outputDevice == paNoDevice ? false : true;
+    if(params.inputDevice == USE_FILE)
+        return params.outputDevice == paNoDevice ? false : true;
+    else
+        return true;
 } /* soundView::isPlayback */
 
 bool
@@ -451,7 +454,7 @@ soundView::drawBuffer(const void* input)
 
     // 0Hz set to 0
     mag[0] = 0;
-    //data->max_db = 0;
+    float max_mag = 0;
     for(int i = 1; i < BUFFER_LEN; i++){
         mag[i] = std::sqrtf(out[i].i * out[i].i +
                             out[i].r * out[i].r);
@@ -459,18 +462,21 @@ soundView::drawBuffer(const void* input)
         mag[i] = 20 * log10(mag[i]);
         // Convert to RGB space
         mag[i] = linestep(mag[i], floor_db, max_db) * 255;
+        max_mag = std::max(max_mag, mag[i]);
     }
-    interp_spec(interp_mag, HEIGHT, mag, VIS_TOPFREQ); // Draw sound spectogram
+    if (max_mag > 0) {
+        interp_spec(interp_mag, HEIGHT, mag, VIS_TOPFREQ); // Draw sound spectogram
 
-    cv::line(spectogram, cv::Point2i(col,0), cv::Point2i(col,HEIGHT), cv::Scalar(0,0,0));
-    cv::line(spectogram, cv::Point2i(col+1,0), cv::Point2i(col+1,HEIGHT), cv::Scalar(0,0,255));
-    for(int row = 0; row < HEIGHT; row++){
-        spectogram.at<cv::Vec3b>(row, col)
-            = cv::Vec3b(    interp_mag[row],
-                            interp_mag[row],
-                            interp_mag[row]);
+        cv::line(spectogram, cv::Point2i(col,0), cv::Point2i(col,HEIGHT), cv::Scalar(0,0,0));
+        cv::line(spectogram, cv::Point2i(col+1,0), cv::Point2i(col+1,HEIGHT), cv::Scalar(0,0,255));
+        for(int row = 0; row < HEIGHT; row++){
+            spectogram.at<cv::Vec3b>(row, col)
+                = cv::Vec3b(    interp_mag[row],
+                                interp_mag[row],
+                                interp_mag[row]);
+        }
+        col = (col+1) % WIDTH;
     }
-    col = (col+1) % WIDTH;
 } /* soundView::drawBuffer */
 
 
