@@ -19,6 +19,8 @@
 
 #include <iostream>
 #include <getopt.h>
+#include <string>
+#include <opencv2/opencv.hpp>
 #include "soundView.h"
 #include "common.h"
 
@@ -54,6 +56,7 @@ phrase(soundView *view)
 {
     int keyCode;
     cv::Mat specMat = view->Spectogram();
+    cv::namedWindow("Spectogram");
     view->start();
     if(view->isPlayback())
     {
@@ -87,10 +90,11 @@ main (int argc, char* argv[])
 	float max_db = 80;
 	float floor_db = -180;
 	float volume = 1;
-    char *fn_outputImage, *fn_baseAudio, *fn_input;
+    char fn_outputImage[255], fn_baseAudio[255], fn_input[255];
     bool isRecord = false;
     bool isScore = false;
     bool isPlayback = false;
+    bool isSave = false;
 
 	int optionChar, prev_ind;
 	while(prev_ind = optind, (optionChar = getopt(argc,argv,"hrpv:t:f:o:s:"))!=EOF){
@@ -120,13 +124,12 @@ main (int argc, char* argv[])
                 cout << "isPlayback         : " << isPlayback << endl;
                 break;
             case 'o':
-                fn_outputImage = new char[ARRAY_LEN(optarg)+1];
+                isSave = true;
                 strcpy(fn_outputImage, optarg);
                 cout << "Output             : " << fn_outputImage << endl;
                 break;
             case 's':
                 isScore = true;
-                fn_baseAudio = new char[ARRAY_LEN(optarg)+1];
                 strcpy(fn_baseAudio, optarg);
                 cout << "Score with         : " << fn_baseAudio << endl;
                 break;
@@ -143,7 +146,6 @@ main (int argc, char* argv[])
     // Check whether using microphone, if not, a input audio file is needed
     if (!isRecord) {
         if(optind < argc){
-            fn_input = new char[ARRAY_LEN(argv[optind])+1];
             strcpy(fn_input, argv[optind]);
         } else {
             cerr << "[Error] Sound file name must be specified." << endl;
@@ -155,45 +157,46 @@ main (int argc, char* argv[])
 	//
 	// Initialization of soundView class
 	//
+
+    soundView::init();
+
     soundView *inputView, *scoreView;
     soundView::Params inputParams, scoreParams;
-    inputParams.sampleRate = SAMPLERATE;
 
-    inputParams = soundView::Params(); // default setting is USE_MIC
-    if (!isRecord) {
+    if (!isRecord)
+    {
         inputParams.inputDevice = USE_FILE;
         inputParams.inputFilename = new char[ARRAY_LEN(fn_input)+1];
         strcpy(inputParams.inputFilename, fn_input);
         inputParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
-        //inputParams.sampleRate = SAMPLERATE;
+        inputParams.sampleRate = SAMPLERATE;
+    } else {
+        inputParams.inputDevice = USE_MIC;
+        inputParams.outputDevice = paNoDevice;
+        inputParams.sampleRate = SAMPLERATE;
     }
+
     inputView = new soundView(inputParams);
     inputView->setLevels(volume, max_db, floor_db);
-
-    if (isScore) {
-        //scoreParams.sampleRate = SAMPLERATE;
-        scoreParams.inputDevice = USE_FILE;
-        scoreParams.inputFilename = new char[ARRAY_LEN(fn_baseAudio)+1];
-        strcpy(scoreParams.inputFilename, fn_baseAudio);
-        scoreParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
-    }
-    scoreView = new soundView(scoreParams);
-    scoreView->setLevels(volume, max_db, floor_db);
-
-    // Initialize the Portaudio
-    soundView::init();
 
 	//
 	// The main loop
 	//
-    cv::namedWindow("Spectogram");
-    cv::Mat displayMat;
-    //bool inScore = false;
 
     //
     // Phrase 1 : Load the score base audio
     //
     if (isScore) {
+        
+        // initialize soundView scoreView
+        scoreParams.sampleRate = SAMPLERATE;
+        scoreParams.inputDevice = USE_FILE;
+        scoreParams.inputFilename = new char[ARRAY_LEN(fn_baseAudio)+1];
+        strcpy(scoreParams.inputFilename, fn_baseAudio);
+        scoreParams.outputDevice = isPlayback ? Pa_GetDefaultOutputDevice() : paNoDevice;
+        scoreView = new soundView(scoreParams);
+        scoreView->setLevels(volume, max_db, floor_db);
+        
         phrase(scoreView);
     }
 
@@ -203,6 +206,18 @@ main (int argc, char* argv[])
     // if USE_FILE, playback and draw Spectogram
     //
     phrase(inputView);
+
+
+    // Save the Spectogram image
+    if(isSave){
+        string fn(fn_outputImage, find(fn_outputImage, fn_outputImage+255, '\0'));
+        bool status = cv::imwrite(fn, inputView->Spectogram());
+        if(status)
+            cout << "[Info] Successfully saved to file : " << fn << endl;
+        else
+            cerr << "[Error] Failed saving file : " << fn << endl;
+
+    }
 
 
     // Print the score

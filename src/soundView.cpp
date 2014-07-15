@@ -74,7 +74,8 @@ soundView::Params::Params()
 }; /* soundView::Params::Params() */
 
 soundView::soundView(const soundView::Params &parameters) :
-    stream(0), volume(1), floor_db(0), max_db(200), params(parameters)
+    volume(1), floor_db(0), max_db(200),
+    spectogram(cv::Size(WIDTH,HEIGHT),CV_8UC3), params(parameters)
 {
 
     //
@@ -87,6 +88,7 @@ soundView::soundView(const soundView::Params &parameters) :
     }
 
     // memory allocation of sound data
+    stream = 0;
     inputData = new float[BUFFER_LEN];
     if (inputData == NULL) {
         cerr << "[Error] Not enough memory!" << endl;
@@ -105,7 +107,7 @@ soundView::soundView(const soundView::Params &parameters) :
         if (!init_mic()) exit(-1);
     }
 
-    spectogram= cv::Mat(cv::Size(WIDTH, HEIGHT),CV_8UC3);
+    //spectogram= cv::Mat(cv::Size(WIDTH, HEIGHT),CV_8UC3);
 
 }; /* soundView::soundView() */
 
@@ -118,6 +120,10 @@ soundView::init()
     PaError err = Pa_Initialize();
     if (err != paNoError)
         paExitWithError(err);
+    err = Pa_GetDeviceCount();
+    if (err < 0)
+        paExitWithError(err);
+    std::cout << "[Info] Available audio devices : " << err << endl;
 }
 
 void
@@ -134,7 +140,8 @@ soundView::start()
     PaError err;
 
     // First need to check if the stream is occupied
-    if (Pa_IsStreamActive( stream )) {
+    err = Pa_IsStreamActive( stream );
+    if (err == 1) {
         cerr << "[Warning] Audio stream is busy, trying to end previous session..."<< endl;
         err = Pa_CloseStream( stream );
         if(err != paNoError){
@@ -142,6 +149,8 @@ soundView::start()
             paExitWithError(err);
         }
     }
+    // else if(err < 0)
+        // paExitWithError(err);
 
     if (params.inputDevice == USE_MIC)
     {
@@ -158,10 +167,12 @@ soundView::start()
     {
         sndHandle.seek(0, SEEK_SET); // seek to the start of sound file.
 
+        unsigned int chn = sndHandle.channels();
+
         if(params.outputDevice != paNoDevice)
         {
             err = Pa_OpenStream(&stream, NULL, &outputParams, params.sampleRate,
-                                BUFFER_LEN, paClipOff, playCallback, this);
+                                BUFFER_LEN * chn, paClipOff, playCallback, this);
             if(err!=paNoError)
                 paExitWithError( err );
             err = Pa_StartStream( stream );
@@ -173,7 +184,7 @@ soundView::start()
         {
             // If no output needed, read file and generate spectogram directly
             while(true) {
-                unsigned int chn = sndHandle.channels();
+                //unsigned int chn = sndHandle.channels();
                 sf_count_t readCount;
                 if(chn > 1)
                 {
@@ -237,7 +248,7 @@ int
 soundView::isPlaying()
 {
     PaError err = Pa_IsStreamActive(stream);
-    if(err != paNoError) paExitWithError(err);
+    if(err < 0) paExitWithError(err);
     return err;
 } /* soundView::isPlaying */
 
@@ -279,11 +290,16 @@ soundView::init_file()
     if(outputParams.device != params.outputDevice) {
         std::cerr << "[Error] Failed to open audio output device: " << outputParams.device << endl;
         return false;
+    }else {
+        cout << "Using device       : " << outputParams.device << endl;
+        if(outputParams.device != paNoDevice){
+
+            outputParams.channelCount = sndHandle.channels();
+            outputParams.sampleFormat = paFloat32;
+            outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowInputLatency;
+            outputParams.hostApiSpecificStreamInfo = NULL;
+        }
     }
-    outputParams.channelCount = sndHandle.channels();
-    outputParams.sampleFormat = paFloat32;
-    outputParams.suggestedLatency = Pa_GetDeviceInfo(outputParams.device)->defaultLowInputLatency;
-    outputParams.hostApiSpecificStreamInfo = NULL;
 
     return true;
 } /* soundView::init_file() */
@@ -353,7 +369,7 @@ soundView::playCallback(const void *input,
                           PaStreamCallbackFlags statusFlags,
                           void *userData)
 {
-    return ((soundView*)userData)->RecordCallbackImpl(input, output,
+    return ((soundView*)userData)->playCallbackImpl(input, output,
                         framePerBuffer, timeInfo, statusFlags);
 } /* soundView::playCallback */
 
@@ -377,9 +393,9 @@ soundView::playCallbackImpl(const void *input,
     unsigned int chn = sndHandle.channels();
     if (chn > 1)
     {
-        float* steroData = new float[framePerBuffer * chn];
-        readCount = sndHandle.read(steroData, framePerBuffer * chn);
-        for (i=0; i<framePerBuffer; i++)
+        float* steroData = new float[framePerBuffer];
+        readCount = sndHandle.read(steroData, framePerBuffer);
+        for (i=0; i<framePerBuffer/chn; i++)
         {
             float mix = 0;
             for(size_t j = 0; j < chn; j++)
@@ -387,27 +403,18 @@ soundView::playCallbackImpl(const void *input,
                 mix += steroData[ i * chn + j ];
                 *wptr++ = steroData[i * chn +j ] * volume;
             }
-            *inputData++ = mix/chn;
+            inputData[i] = mix/chn;
         }
-        readCount = readCount / chn;
+        //readCount = readCount / chn;
 
     }
-    else
+    else{
         readCount = sndHandle.read(inputData, framePerBuffer);
+        for(i=0; i<framePerBuffer; i++)
+            *wptr++ = inputData[i] * volume;
+    }
+    drawBuffer(inputData);
 
-
-    // If has playback device supplied
-    // fill output stream with libsndfile data
-
-    //for(i=0; i<framePerBuffer; i++ ){
-        //*wptr++ = *inputData * volume;
-        //if( sndHandle.channels() == 2 ){
-            //inputData ++;
-            //*wptr++ = *inputData++ * volume;
-        //} else {
-            //*wptr++ = *inputData++ * volume;
-        //}
-    //}
 
     // Read sndfile in, check if the file reach the end?
     // If so, return to the start of sndfile (loop)
@@ -415,7 +422,7 @@ soundView::playCallbackImpl(const void *input,
 
     if( readCount < (sf_count_t)framePerBuffer) {
         // sndHandle.seek(0, SEEK_SET);
-        cout << "[Info] Playback finished, Press 'r' to replay." << endl;
+        //cout << "[Info] Playback finished, Press 'r' to replay." << endl;
         return paComplete;
     }
 
